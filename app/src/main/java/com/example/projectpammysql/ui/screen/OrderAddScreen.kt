@@ -60,7 +60,7 @@ fun OrderAddScreen(
     var selectedStatus by remember { mutableStateOf("pending") }
     var orderItems by remember { mutableStateOf<List<OrderItemForm>>(emptyList()) }
     var expandedTokoDropdown by remember { mutableStateOf(false) }
-    //var expandedStatusDropdown by remember { mutableStateOf(false) }
+    var expandedStatusDropdown by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         barangViewModel.getAllBarang()
@@ -153,7 +153,39 @@ fun OrderAddScreen(
             }
 
             // Pilih Status
-
+            item {
+                Text("Pilih Status", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Box {
+                    OutlinedButton(
+                        onClick = { expandedStatusDropdown = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            when (selectedStatus) {
+                                "menunggu" -> "Menunggu"
+                                "selesai" -> "Selesai"
+                                "batal" -> "Batal"
+                                else -> "Pilih Status"
+                            }
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expandedStatusDropdown,
+                        onDismissRequest = { expandedStatusDropdown = false },
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    ) {
+                        listOf("menunggu" to "Menunggu", "selesai" to "Selesai", "baal" to "Batal").forEach { (value, label) ->
+                            DropdownMenuItem(
+                                text = { Text(label) },
+                                onClick = {
+                                    selectedStatus = value
+                                    expandedStatusDropdown = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             // Items Header
             item {
