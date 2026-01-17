@@ -39,6 +39,8 @@ fun OrderListScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.getAllOrder()
@@ -50,8 +52,36 @@ fun OrderListScreen(
                 viewModel.resetState()
                 viewModel.getAllOrder()
             }
+            is OrderUiState.Error -> {
+                errorMessage = (uiState as OrderUiState.Error).message
+                showErrorDialog = true
+            }
             else -> {}
         }
+    }
+
+    // ✅ Error Dialog
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showErrorDialog = false
+                viewModel.resetState()
+                viewModel.getAllOrder()
+            },
+            title = { Text(text = "Error") },
+            text = { Text(text = errorMessage) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showErrorDialog = false
+                        viewModel.resetState()
+                        viewModel.getAllOrder()
+                    }
+                ) {
+                    Text(text = "OK")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -198,7 +228,7 @@ fun OrderCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Order #${order.orderId}", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text(order.namaToko, fontSize = 12.sp, color = Color.Gray)
+                    Text(order.namaToko?: "-", fontSize = 12.sp, color = Color.Gray)
                 }
                 Text(order.status, fontSize = 10.sp, color = Color(0xFF4CAF50))
             }

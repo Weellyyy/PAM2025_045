@@ -9,9 +9,9 @@ data class Order(
     val orderId: Int = 0,
     val tanggal: String = "",
     @SerialName("toko_id")
-    val tokoId: Int = 0,
+    val tokoId: Int? = 0,  // ✅ Nullable
     @SerialName("user_id")
-    val userId: Int = 0,
+    val userId: Int? = 0,  // ✅ Nullable
     val total: String = "0",
     val status: String = "pending"
 )
@@ -19,7 +19,7 @@ data class Order(
 @Serializable
 data class OrderItem(
     @SerialName("barang_id")
-    val barangId: Int,
+    val barangId: Int? = 0,  // ✅ Nullable (jika barang dihapus)
     val jumlah: Int,
     @SerialName("harga_satuan")
     val hargaSatuan: Double
@@ -41,18 +41,17 @@ data class OrderResponse(
     val orderId: Int = 0,
     val tanggal: String = "",
     @SerialName("toko_id")
-    val tokoId: Int = 0,
+    val tokoId: Int? = null,  // ✅ Sudah nullable
     @SerialName("user_id")
-    val userId: Int? = null,
+    val userId: Int? = null,  // ✅ Sudah nullable
     val total: String = "0",
     val status: String = "pending",
     @SerialName("nama_toko")
-    val namaToko: String = "",
-    val username: String? = null,
+    val namaToko: String? = null,  // ✅ Ubah jadi nullable
+    val username: String? = null,  // ✅ Sudah nullable
     @SerialName("invoice_id")
-    val invoiceId: Int? = null,
+    val invoiceId: Int? = null,  // ✅ Sudah nullable
     @SerialName("file_url")
-    val fileUrl: String? = null,
+    val fileUrl: String? = null,  // ✅ Sudah nullable
     val items: List<OrderItem> = emptyList()
 )
-

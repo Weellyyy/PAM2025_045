@@ -125,8 +125,14 @@ class BarangViewModel(
                     Log.d("BarangViewModel", "Barang deleted successfully")
                     _uiState.value = BarangUiState.Success("Barang berhasil dihapus")
                 } else {
-                    Log.e("BarangViewModel", "Delete failed: ${response.message()}")
-                    _uiState.value = BarangUiState.Error("Gagal menghapus barang: ${response.message()}")
+                    // ✅ Handle foreign key constraint error (409)
+                    val errorMessage = if (response.code() == 409) {
+                        "Barang tidak bisa dihapus karena masih digunakan di order. Silakan hapus order terlebih dahulu."
+                    } else {
+                        "Gagal menghapus barang: ${response.message()}"
+                    }
+                    Log.e("BarangViewModel", "Delete failed: $errorMessage")
+                    _uiState.value = BarangUiState.Error(errorMessage)
                 }
             } catch (e: Exception) {
                 Log.e("BarangViewModel", "Exception in deleteBarang: ${e.message}", e)

@@ -72,6 +72,8 @@ fun BarangListScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState = viewModel.uiState.collectAsState().value
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     Log.d("BarangListScreen", "Current UI State: ${uiState::class.simpleName}")
 
@@ -94,12 +96,38 @@ fun BarangListScreen(
             }
             is BarangUiState.Error -> {
                 Log.e("BarangListScreen", "Error state: ${uiState.message}")
-                viewModel.resetState()
+                errorMessage = uiState.message
+                showErrorDialog = true
+                // ✅ Jangan reset state langsung, biarkan list tetap tampil
             }
             else -> {
                 Log.d("BarangListScreen", "Other state: ${uiState::class.simpleName}")
             }
         }
+    }
+
+    // ✅ Error Dialog
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showErrorDialog = false
+                viewModel.resetState()
+                viewModel.getAllBarang()
+            },
+            title = { Text("Error") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showErrorDialog = false
+                        viewModel.resetState()
+                        viewModel.getAllBarang()
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
     }
 
     Scaffold(

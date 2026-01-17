@@ -109,13 +109,14 @@ class OrderViewModel(
         }
 
         for (item in orderRequest.items) {
-            if (item.barangId <= 0) {
+            // ✅ Handle nullable values dengan proper null checking
+            if (item.barangId == null || item.barangId <= 0) {
                 return "Barang tidak valid"
             }
-            if (item.jumlah <= 0) {
+            if (item.jumlah == null || item.jumlah <= 0) {
                 return "Jumlah item harus lebih dari 0"
             }
-            if (item.hargaSatuan <= 0.0) {
+            if (item.hargaSatuan == null || item.hargaSatuan <= 0.0) {
                 return "Harga satuan tidak valid"
             }
         }
@@ -144,10 +145,16 @@ class OrderViewModel(
             _uiState.value = OrderUiState.Loading
             try {
                 val response = repositoryOrder.deleteOrder(id)
-                if (response.isSuccessful) {
+                if (response?.isSuccessful == true) {
                     _uiState.value = OrderUiState.Success("Order berhasil dihapus")
                 } else {
-                    _uiState.value = OrderUiState.Error("Gagal menghapus order: ${response.message()}")
+                    // ✅ Handle foreign key constraint error (409)
+                    val errorMessage = if (response?.code() == 409) {
+                        "Order tidak bisa dihapus karena masih memiliki referensi. Silakan cek data terkait."
+                    } else {
+                        "Gagal menghapus order: ${response?.message() ?: "Unknown error"}"
+                    }
+                    _uiState.value = OrderUiState.Error(errorMessage)
                 }
             } catch (e: Exception) {
                 _uiState.value = OrderUiState.Error("Error: ${e.message}")

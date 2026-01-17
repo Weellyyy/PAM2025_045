@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projectpammysql.viewmodel.OrderUiState
 import com.example.projectpammysql.viewmodel.OrderViewModel
 import com.example.projectpammysql.viewmodel.provider.PenyediaViewModel
+import com.itextpdf.layout.element.Text
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +82,7 @@ fun OrderDetailScreen(
                                 }
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                     Text("Toko", color = Color.Gray, fontSize = 12.sp)
-                                    Text(order.namaToko, fontWeight = FontWeight.Bold)
+                                    Text(order.namaToko?:"-", fontWeight = FontWeight.Bold)
                                 }
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                     Text("User", color = Color.Gray, fontSize = 12.sp)
@@ -115,17 +116,17 @@ fun OrderDetailScreen(
                         Text("Items", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     }
 
-                    items(order.items, key = { it.barangId }) { item ->
+                    items(order.items, key = { it.barangId ?: 0 }) { item ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = Color.White),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                Text(item.namaBarang, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                Text(text = item.namaBarang ?: "Barang Tidak Tersedia", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Text("Qty: ${item.jumlah}", fontSize = 11.sp)
-                                    Text("Rp ${item.hargaSatuan}", fontSize = 11.sp)
+                                    Text(text = "Qty: ${item.jumlah}", fontSize = 11.sp)
+                                    Text(text = "Rp ${item.hargaSatuan}", fontSize = 11.sp)
                                 }
                             }
                         }
